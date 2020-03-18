@@ -36,6 +36,16 @@ module LarvataOrganization
 
         def add_org_user_node(org_node, user, typing)
           role_node = org_node.children.send(typing).first
+
+          if role_node.nil?
+            role_node = org_node.children.enabled.send(typing)
+              .find_or_create_by(
+                nodeable: org_node.nodeable,
+                typing: typing,
+                code: "#{org_node.code}_#{typing}"
+            )
+          end
+
           user_node = LarvataOrganization::Factory::Nodes.create_user(role_node, user, typing)
 
           {
